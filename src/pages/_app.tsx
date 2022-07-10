@@ -3,9 +3,10 @@ import { withTRPC } from "@trpc/next";
 import type { AppRouter } from "../server/router/app.router";
 import type { AppType } from "next/dist/shared/lib/utils";
 import superjson from "superjson";
-import { SessionProvider } from "next-auth/react";
 import { loggerLink } from "@trpc/client/links/loggerLink";
 import { httpBatchLink } from "@trpc/client/links/httpBatchLink";
+import { trpc } from "@/utils/trpc";
+import { SessionProvider, useSession } from "next-auth/react";
 
 const MyApp: AppType = ({
   Component,

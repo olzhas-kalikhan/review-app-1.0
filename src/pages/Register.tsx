@@ -12,12 +12,15 @@ const Register = () => {
     formState: { errors },
   } = useForm<CreateUserInput>();
 
-  const { mutate, error } = trpc.useMutation(["users.register-user"], {
-    onError: () => {},
-    onSuccess: () => {
-      router.push("/login");
-    },
-  });
+  const { mutate, error: apiError } = trpc.useMutation(
+    ["users.register-user"],
+    {
+      onError: () => {},
+      onSuccess: () => {
+        router.push("/login");
+      },
+    }
+  );
   const onSubmit = (values: CreateUserInput) => {
     mutate(values);
   };
@@ -31,8 +34,8 @@ const Register = () => {
       >
         <h1>Register</h1>
         {/* register your input into the hook by invoking the "register" function */}
-        <input {...register("username", { required: true })} />
-        {errors.username && <span>This field is required</span>}
+        <input {...register("name", { required: true })} />
+        {errors.name && <span>This field is required</span>}
 
         <input {...register("email", { required: true })} />
         {errors.email && <span>This field is required</span>}
@@ -42,6 +45,7 @@ const Register = () => {
         {/* errors will return when field validation fails  */}
         {errors.password && <span>This field is required</span>}
 
+        <span>{apiError?.message}</span>
         <input type="submit" />
       </form>
       <Link href="/login">Login</Link>
