@@ -1,16 +1,16 @@
 import { CreateUserInput } from "@/schema/user.schema";
 import { trpc } from "@/utils/trpc";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
+import NextLink from "@/components/NextLink";
+import { FormInput } from "@/components/form";
+import { Heading, Button, Container, Box, HStack } from "@chakra-ui/react";
 
 const Register = () => {
   const router = useRouter();
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<CreateUserInput>();
+  const { control, handleSubmit } = useForm<any>({
+    defaultValues: { email: "", name: "", password: "" },
+  });
 
   const { mutate, error: apiError } = trpc.useMutation(
     ["users.register-user"],
@@ -26,30 +26,22 @@ const Register = () => {
   };
 
   return (
-    /* "handleSubmit" will validate your inputs before invoking "onSubmit" */
-    <>
-      <form
-        className="flex flex-col bg-gray-200"
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <h1>Register</h1>
-        {/* register your input into the hook by invoking the "register" function */}
-        <input {...register("name", { required: true })} />
-        {errors.name && <span>This field is required</span>}
-
-        <input {...register("email", { required: true })} />
-        {errors.email && <span>This field is required</span>}
-
-        {/* include validation with required or other standard HTML validation rules */}
-        <input {...register("password", { required: true })} />
-        {/* errors will return when field validation fails  */}
-        {errors.password && <span>This field is required</span>}
-
-        <span>{apiError?.message}</span>
-        <input type="submit" />
+    <Container maxW="md">
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Heading as="h1" size="xl">
+          Register
+        </Heading>
+        <FormInput control={control} name="name" label="Name" />
+        <FormInput control={control} name="email" label="Email" />
+        <FormInput control={control} name="password" label="Password" />
+        <HStack spacing={2}>
+          <Button type="submit">Sign Up</Button>
+          <NextLink href="/Login">
+            <Button variant="link">Login</Button>
+          </NextLink>
+        </HStack>
       </form>
-      <Link href="/login">Login</Link>
-    </>
+    </Container>
   );
 };
 

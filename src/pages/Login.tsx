@@ -1,21 +1,17 @@
-import { loginUserSchema } from "@/schema/user.schema";
-import { trpc } from "@/utils/trpc";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import { signIn, getCsrfToken } from "next-auth/react";
 import { Context } from "@/server/createContext";
+import { FormInput } from "@/components/form";
+import { Box, Button, Container, Heading, HStack } from "@chakra-ui/react";
+import NextLink from "@/components/NextLink";
 
 const Login = ({ csrfToken }: any) => {
   const router = useRouter();
   const { callbackUrl } = router.query;
-  const {
-    register,
-    handleSubmit,
-    setError,
-    clearErrors,
-    formState: { errors },
-  } = useForm<any>();
+  const { control, handleSubmit, setError, clearErrors } = useForm<any>({
+    defaultValues: { email: "", password: "" },
+  });
 
   const onSubmit = async (values: { email: string; password: string }) => {
     const res = await signIn("credentials", {
@@ -27,31 +23,31 @@ const Login = ({ csrfToken }: any) => {
     } else {
       clearErrors("email");
     }
-    if (res?.url) router.push(res.url + callbackUrl);
-    // setSubmitting(false);
+    if (res?.url) router.push(callbackUrl?.[0] || res.url);
   };
 
   return (
-    <>
-      <form
-        className="flex flex-col bg-gray-200"
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <h1>Login</h1>
-        {/* register your input into the hook by invoking the "register" function */}
-        <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
-        <input {...register("email", { required: true })} />
-        {errors.email && <span>This field is required</span>}
-
-        {/* include validation with required or other standard HTML validation rules */}
-        <input {...register("password", { required: true })} />
-        {/* errors will return when field validation fails  */}
-        {errors.password && <span>This field is required</span>}
-
-        <input type="submit" />
+    <Container maxW="md">
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Heading as="h1" size="xl">
+          Login
+        </Heading>
+        <input defaultValue={csrfToken} name="csrfToken" type="hidden" />
+        <FormInput control={control} name="email" label="Email" />
+        <FormInput
+          name="password"
+          control={control}
+          label="Password"
+          type="password"
+        />
+        <HStack spacing={2}>
+          <Button type="submit">Sign In</Button>
+          <NextLink href="/Register">
+            <Button variant="link">Register</Button>
+          </NextLink>
+        </HStack>
       </form>
-      <Link href="/login">Register</Link>
-    </>
+    </Container>
   );
 };
 

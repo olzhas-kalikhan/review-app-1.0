@@ -77,6 +77,7 @@ export default NextAuth({
     signIn: "/Login",
     signOut: "/auth/signout",
     newUser: "/auth/new-user",
+    error: "/auth/error",
   },
   debug: process.env.NODE_ENV === "development",
   session: { strategy: "jwt" },

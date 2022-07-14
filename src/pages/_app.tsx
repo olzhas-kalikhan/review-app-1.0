@@ -1,20 +1,30 @@
-import "@/styles/global.css";
 import { withTRPC } from "@trpc/next";
 import type { AppRouter } from "../server/router/app.router";
-import type { AppType } from "next/dist/shared/lib/utils";
 import superjson from "superjson";
 import { loggerLink } from "@trpc/client/links/loggerLink";
 import { httpBatchLink } from "@trpc/client/links/httpBatchLink";
-import { trpc } from "@/utils/trpc";
-import { SessionProvider, useSession } from "next-auth/react";
+import { SessionProvider } from "next-auth/react";
+import { ChakraProvider } from "@chakra-ui/react";
+import type { AppProps } from "next/app";
+import { ReactElement, ReactNode } from "react";
+import { NextPage } from "next";
 
-const MyApp: AppType = ({
+export type NextPageWithLayout = NextPage & {
+  getLayout?: (page: ReactElement) => ReactNode;
+};
+
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout;
+};
+
+const MyApp = ({
   Component,
   pageProps: { session, ...pageProps },
-}) => {
+}: AppPropsWithLayout) => {
+  const getLayout = Component.getLayout ?? ((page) => page);
   return (
     <SessionProvider session={session}>
-      <Component {...pageProps} />
+      <ChakraProvider>{getLayout(<Component {...pageProps} />)}</ChakraProvider>
     </SessionProvider>
   );
 };

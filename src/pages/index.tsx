@@ -1,12 +1,14 @@
+import { UserLayout } from "@/components/Layout";
 import type { NextPage } from "next";
 import { useSession, signOut } from "next-auth/react";
+import { ReactElement } from "react";
 
-const Home: NextPage = () => {
-  const data = useSession();
-  console.log(data);
-  // if (!session) return <div>Unauthorized</div>;
+const Home = () => {
+  const { data, status } = useSession();
+
+  if (status === "unauthenticated") return <div>Unauthorized</div>;
   return (
-    <div className="text-red-200">
+    <div>
       <button
         onClick={() => {
           signOut();
@@ -18,4 +20,7 @@ const Home: NextPage = () => {
   );
 };
 
+Home.getLayout = function getLayout(page: ReactElement) {
+  return <UserLayout>{page}</UserLayout>;
+};
 export default Home;
